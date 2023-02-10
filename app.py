@@ -35,10 +35,18 @@ def index():
 
     return """
         <html>
+            <head>
+                <title>Remove PDF Password</title>
+            </head>
             <body>
+                <h1>Remove PDF Password</h1>
                 <form action="/" method="post" enctype="multipart/form-data">
-                    <input type="file" name="pdf_file">
-                    <input type="password" name="password">
+                    <label for="pdf_file">PDF File:</label>
+                    <input type="file" id="pdf_file" name="pdf_file" required>
+                    <br><br>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                    <br><br>
                     <input type="submit" value="Submit">
                 </form>
             </body>
