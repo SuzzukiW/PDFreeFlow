@@ -8,14 +8,27 @@ app = Flask(__name__)
 def index():
     if request.method == "POST":
         # Get the uploaded PDF file
-        pdf_file = request.files["pdf_file"]
+        pdf_file = request.files.get("pdf_file")
+        if not pdf_file:
+            return "No PDF file uploaded."
 
         # Open the PDF file in read-only mode
-        pdf_reader = PyPDF2.PdfReader(pdf_file.stream)
+        try:
+            pdf_reader = PyPDF2.PdfReader(pdf_file.stream)
+        except Exception as e:
+            return f"Error opening PDF file: {e}"
 
-        # Enter the password for the PDF file
-        password = request.form["password"]
-        pdf_reader.decrypt(password)
+        # Check if the PDF file has any security restrictions
+        if pdf_reader.isEncrypted:
+            # Enter the password for the PDF file
+            password = request.form.get("password")
+            if not password:
+                return "No password entered."
+
+            try:
+                pdf_reader.decrypt(password)
+            except Exception as e:
+                return "Wrong password. This program cannot help you if you do not have the correct password for your PDF file."
 
         # Create a new PDF file to store the unprotected version
         pdf_writer = PyPDF2.PdfWriter()
@@ -25,11 +38,11 @@ def index():
             pdf_writer.add_page(pdf_reader.pages[page_num])
 
         # Save the new PDF file
-        unprotected_pdf = open("unprotected.pdf", "wb")
-        pdf_writer.write(unprotected_pdf)
-
-        # Close the PDF files
-        unprotected_pdf.close()
+        try:
+            with open("unprotected.pdf", "wb") as unprotected_pdf:
+                pdf_writer.write(unprotected_pdf)
+        except Exception as e:
+            return f"Error saving unprotected PDF file: {e}"
 
         # Return the unprotected PDF file to the user
         return send_file("unprotected.pdf", as_attachment=True)
