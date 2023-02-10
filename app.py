@@ -18,17 +18,15 @@ def index():
         except Exception as e:
             return f"Error opening PDF file: {e}"
 
-        # Check if the PDF file has any security restrictions
-        if pdf_reader.isEncrypted:
-            # Enter the password for the PDF file
-            password = request.form.get("password")
-            if not password:
-                return "No password entered."
+        # Enter the password for the PDF file
+        password = request.form.get("password")
+        if not password:
+            return "No password entered."
 
-            try:
-                pdf_reader.decrypt(password)
-            except Exception as e:
-                return "Wrong password. This program cannot help you if you do not have the correct password for your PDF file."
+        try:
+            pdf_reader.decrypt(password)
+        except Exception as e:
+            return f"Error decrypting PDF file: {e}"
 
         # Create a new PDF file to store the unprotected version
         pdf_writer = PyPDF2.PdfWriter()
