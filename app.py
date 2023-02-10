@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, render_template, send_file
 import PyPDF2
 
 app = Flask(__name__)
@@ -33,25 +33,7 @@ def index():
         # Return the unprotected PDF file to the user
         return send_file("unprotected.pdf", as_attachment=True)
 
-    return """
-        <html>
-            <head>
-                <title>Remove PDF Password</title>
-            </head>
-            <body>
-                <h1>Remove PDF Password</h1>
-                <form action="/" method="post" enctype="multipart/form-data">
-                    <label for="pdf_file">PDF File:</label>
-                    <input type="file" id="pdf_file" name="pdf_file" required>
-                    <br><br>
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
-                    <br><br>
-                    <input type="submit" value="Submit">
-                </form>
-            </body>
-        </html>
-    """
+    return render_template("index.html")
 
 if __name__ == "__main__":
     app.run()
